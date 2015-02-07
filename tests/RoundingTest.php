@@ -84,4 +84,25 @@ class RoundingTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals(0, bccomp((string)round(0.01154076576, 2, PHP_ROUND_HALF_ODD), Math::bcround('0.01154076576', Money::BASIC_PRECISION, Money::ROUND_HALF_ODD), 2));
         $this->assertEquals(0, bccomp((string)round(-0.0146076576, 2, PHP_ROUND_HALF_ODD), Math::bcround('-0.0146076576', Money::BASIC_PRECISION, Money::ROUND_HALF_ODD), 2));
     }
+
+    /**
+     * @expectedException \Keios\MoneyRight\Exceptions\InvalidArgumentException
+     */
+    public function testBcRoundMethodThrowsExceptionOnInvalidRoundingMode() {
+        Math::bcround('1.00005', Money::GAAP_PRECISION, 'TotallyInvalidRoundingMode');
+    }
+
+    public function testIntegersAreNotRounded() {
+        $this->assertEquals(0, bccomp('1', Math::bcround('1', Money::GAAP_PRECISION, Money::ROUND_HALF_UP), Money::GAAP_PRECISION));
+        $this->assertEquals(0, bccomp('1', Math::bcround('1', Money::GAAP_PRECISION, Money::ROUND_HALF_DOWN), Money::GAAP_PRECISION));
+        $this->assertEquals(0, bccomp('1', Math::bcround('1', Money::GAAP_PRECISION, Money::ROUND_HALF_EVEN), Money::GAAP_PRECISION));
+        $this->assertEquals(0, bccomp('1', Math::bcround('1', Money::GAAP_PRECISION, Money::ROUND_HALF_ODD), Money::GAAP_PRECISION));
+    }
+
+    public function testFloatsWithOneDecimalPlaceAreRoundedCorrectlyToIntegers() {
+        $this->assertEquals(0, bccomp((string)round(1.5, 0, PHP_ROUND_HALF_UP), Math::bcround('1.5', 0, Money::ROUND_HALF_UP), 0));
+        $this->assertEquals(0, bccomp((string)round(1.5, 0, PHP_ROUND_HALF_DOWN), Math::bcround('1.5', 0, Money::ROUND_HALF_DOWN), 0));
+        $this->assertEquals(0, bccomp((string)round(1.5, 0, PHP_ROUND_HALF_EVEN), Math::bcround('1.5', 0, Money::ROUND_HALF_EVEN), 0));
+        $this->assertEquals(0, bccomp((string)round(1.5, 0, PHP_ROUND_HALF_ODD), Math::bcround('1.5', 0, Money::ROUND_HALF_ODD), 0));
+    }
 } 
