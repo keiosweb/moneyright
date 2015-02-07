@@ -12,6 +12,12 @@ Follows [GAAP](http://en.wikipedia.org/wiki/Generally_accepted_accounting_princi
 
 Follows PSR-2 guidelines.
 
+Project name is inspired by [Kanye West's](https://www.youtube.com/watch?v=E58qLXBfLrs) verse:
+```
+La la la la... wait till I get my money right!
+```
+As we all know money really should be right (and therefore not stored in floats!).
+
 ## Requirements
 PHP 5.4.0+
 BCMath Arbitrary Precision Arithmetic PHP extension
