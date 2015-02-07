@@ -1,0 +1,40 @@
+{
+    "name": "keios/moneyright",
+    "description": "Precise, GAAP-compliant, database-friendly Money Value Object",
+    "keywords": [
+        "money",
+        "moneyright",
+        "GAAP"
+    ],
+    "homepage": "https://github.com/keios/moneyright",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Łukasz Biały",
+            "email": "lukasz@c-call.eu",
+            "homepage": "http://keios.eu",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=5.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Keios\\MoneyRight\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Keios\\MoneyRight\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

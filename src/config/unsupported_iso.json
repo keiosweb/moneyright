@@ -1,0 +1,32 @@
+{
+    "mga": {
+        "priority": 100,
+        "iso_code": "MGA",
+        "name": "Malagasy Ariary",
+        "symbol": "Ar",
+        "alternate_symbols": [],
+        "subunit": "Iraimbilanja",
+        "subunit_to_unit": 5,
+        "symbol_first": true,
+        "html_entity": "",
+        "decimal_mark": ".",
+        "thousands_separator": ",",
+        "iso_numeric": "969",
+        "smallest_denomination": 1
+    },
+    "mro": {
+        "priority": 100,
+        "iso_code": "MRO",
+        "name": "Mauritanian Ouguiya",
+        "symbol": "UM",
+        "alternate_symbols": [],
+        "subunit": "Khoums",
+        "subunit_to_unit": 5,
+        "symbol_first": false,
+        "html_entity": "",
+        "decimal_mark": ".",
+        "thousands_separator": ",",
+        "iso_numeric": "478",
+        "smallest_denomination": 1
+    }
+}
