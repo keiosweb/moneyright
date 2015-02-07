@@ -209,6 +209,8 @@ class Math
             case self::ROUND_HALF_ODD:
                 $retVal = self::bcRoundHalfOdd($sign, $number, $precision);
                 break;
+            default:
+                throw new \Exception('Keios\MoneyRight\Math::bcround fatal error: unknown rounding mode.'); // for scrutinizer-ci
         }
 
         /*

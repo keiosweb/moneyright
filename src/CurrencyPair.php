@@ -16,7 +16,7 @@ class CurrencyPair
     /** @var Currency */
     private $counterCurrency;
 
-    /** @var float */
+    /** @var string */
     private $ratio;
 
     /**
