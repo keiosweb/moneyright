@@ -58,6 +58,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 - [Keios Solutions](https://github.com/keiosweb)
 - [Mathias Verraes](https://github.com/mathiasverraes)
+- [RubyMoney](https://github.com/RubyMoney)
 - [All Contributors](../../contributors)
 
 ## License
