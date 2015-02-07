@@ -55,7 +55,6 @@ var_dump($grossPrice->getAmount()); // int(1230) - cents
 ``` bash
 $ phpunit
 ```
-
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
