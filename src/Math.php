@@ -36,171 +36,208 @@ class Math
     const ROUND_HALF_ODD = PHP_ROUND_HALF_ODD;
 
     /**
-     * Round decimals from 5 up, less than 5 down
-     *
-     * @param $sign
      * @param $number
      * @param $precision
-     *
+     * @return bool
+     */
+    final private static function isFirstDecimalAfterPrecisionTrailedByZeros($number, $precision)
+    {
+        $secondPlaceAfterPrecision = strpos($number, '.') + $precision + 2;
+        $remainingDecimals = substr($number, $secondPlaceAfterPrecision);
+
+        return bccomp($remainingDecimals, '0', 64) === 1;
+    }
+
+    /**
+     * @param $number
+     * @param $precision
      * @return string
      */
-    final private static function bcRoundHalfUp($sign, $number, $precision)
+    final private static function getHalfUpValue($number, $precision)
     {
-        if (strpos($number, '.') === false) {
-            return bcadd($number, '0', $precision);
-        }
+        $sign = self::getSign($number);;
 
-        $halfUpValue = $sign . '0.' . str_repeat('0', $precision) . '5';
-        $number = bcadd($number, $halfUpValue, $precision + 1);
+        return $sign . '0.' . str_repeat('0', $precision) . '5';
+    }
 
+    /**
+     * @param $number
+     * @param $precision
+     * @return string
+     */
+    final private static function truncate($number, $precision)
+    {
         return bcadd($number, '0', $precision);
     }
 
+
     /**
-     * Round decimals from 6 up, less than 6 down
-     *
-     * @param $sign
+     * @param $firstDecimalAfterPrecision
      * @param $number
      * @param $precision
-     *
      * @return string
      */
-    final private static function bcRoundHalfDown($sign, $number, $precision)
+    final private static function roundNotTied($firstDecimalAfterPrecision, $number, $precision)
     {
-        if (strpos($number, '.') === false) {
-            return bcadd($number, '0', $precision);
+        if ($firstDecimalAfterPrecision > self::HALF) {
+            return self::bcRoundHalfUp($number, $precision);
+        } else {
+            return self::truncate($number, $precision);
+        }
+    }
+
+    /**
+     * @param $number
+     * @param $precision
+     * @param $roundingMode
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    final private static function roundTied($number, $precision, $roundingMode)
+    {
+        if (self::isFirstDecimalAfterPrecisionTrailedByZeros($number, $precision)) {
+
+            $result = self::bcRoundHalfUp($number, $precision);
+
+        } else {
+            switch ($roundingMode) {
+                case self::ROUND_HALF_DOWN:
+                    $result = self::truncate($number, $precision);
+                    break;
+                case self::ROUND_HALF_EVEN:
+                    $result = self::getEvenRoundedResult($number, $precision);
+                    break;
+                case self::ROUND_HALF_ODD:
+                    $result = self::getOddRoundedResult($number, $precision);
+                    break;
+                default:
+                    throw new InvalidArgumentException('Rounding mode should be Money::ROUND_HALF_DOWN | Money::ROUND_HALF_EVEN | Money::ROUND_HALF_ODD | Money::ROUND_HALF_UP');
+            }
         }
 
+        return $result;
+    }
+
+    /**
+     * @param $number
+     * @return string
+     */
+    final private static function getSign($number)
+    {
+        if (bccomp('0', $number, 64) == 1) {
+            return '-';
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * @param $number
+     * @param $precision
+     * @return int
+     */
+    final private static function getEvenOddDigit($number, $precision)
+    {
+        list($integers, $decimals) = explode('.', $number);
+        if ($precision === 0) {
+            return (int)substr($integers, -1);
+        } else {
+            return (int)$decimals[$precision - 1];
+        }
+    }
+
+    /**
+     * @param $number
+     * @param $precision
+     * @return string
+     */
+    final private static function getOddRoundedResult($number, $precision)
+    {
+        if (self::getEvenOddDigit($number, $precision) % 2) { // odd
+            return self::truncate($number, $precision);
+        } else { // even
+            return self::truncate(self::bcRoundHalfUp($number, $precision), $precision);
+        }
+
+    }
+
+    /**
+     * @param $number
+     * @param $precision
+     * @return string
+     */
+    final private static function getEvenRoundedResult($number, $precision)
+    {
+        if (self::getEvenOddDigit($number, $precision) % 2) { // odd
+            return self::bcRoundHalfUp($number, $precision);
+        } else { // even
+            return self::truncate($number, $precision);
+        }
+
+    }
+
+    /**
+     * @param $number
+     * @param $precision
+     * @return int
+     */
+    final private static function getFirstDecimalAfterPrecision($number, $precision)
+    {
         $decimals = explode('.', $number)[1];
-        $halfUpValue = $sign . '0.' . str_repeat('0', $precision) . '5';
         $firstDecimalAfterPrecision = (int)substr($decimals, $precision, 1);
 
-        if ($firstDecimalAfterPrecision === self::HALF) {
-            $remainingDecimals = substr($decimals, $precision + 1);
-            if (bccomp($remainingDecimals, '0', 64) === 1) {
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-            } else {
-                $result = $number;
-            }
-        } else {
-            if ($firstDecimalAfterPrecision > self::HALF) {
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-            } else {
-                $result = $number;
-            }
-        }
-
-        return bcadd($result, '0', $precision);
+        return $firstDecimalAfterPrecision;
     }
 
     /**
-     * Round on half towards nearest even number on $precision - 1 position
+     * Round decimals from 5 up, less than 5 down
      *
-     * @param $sign
      * @param $number
      * @param $precision
      *
      * @return string
      */
-    final private static function bcRoundHalfEven($sign, $number, $precision)
+    final private static function bcRoundHalfUp($number, $precision)
     {
-        if (strpos($number, '.') === false) {
-            return bcadd($number, '0', $precision);
-        }
-
-        list($integers, $decimals) = explode('.', $number);
-        $halfUpValue = $sign . '0.' . str_repeat('0', $precision) . '5';
-        $firstDecimalAfterPrecision = (int)substr($decimals, $precision, 1);
-
-        if ($firstDecimalAfterPrecision === self::HALF) {
-
-            $remainingDecimals = substr($decimals, $precision + 1);
-
-            if (bccomp($remainingDecimals, '0', 64) === 1) {
-
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-                
-            } else {
-                if ($precision === 0) {
-                    $evenOddDigit = (int)substr($integers, -1);
-                } else {
-                    $evenOddDigit = (int)$decimals[$precision - 1];
-                }
-
-                if ($evenOddDigit % 2) { // odd
-                    $result = bcadd($number, $halfUpValue, $precision + 1);
-                } else { // even
-                    $result = $number;
-                }
-
-            }
-        } else {
-
-            if ($firstDecimalAfterPrecision > self::HALF) {
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-            } else {
-                $result = $number;
-            }
-        }
-
-        return bcadd($result, '0', $precision);
+        return self::truncate(bcadd($number, self::getHalfUpValue($number, $precision), $precision + 1), $precision);
     }
 
     /**
-     * Round on half towards nearest odd number on $precision - 1 position
-     *
-     * @param $sign
-     * @param $number
      * @param $precision
-     *
+     * @return int
+     */
+    final private static function normalizePrecision($precision)
+    {
+        return ($precision < 0) ? 0 : $precision;
+    }
+
+    /**
+     * @param $number
+     * @return bool
+     */
+    final private static function isNotDecimalString($number)
+    {
+        return strpos($number, '.') === false;
+    }
+
+    /**
+     * @param $result
+     * @param $precision
      * @return string
      */
-    final private static function bcRoundHalfOdd($sign, $number, $precision)
+    final private static function normalizeZero($result, $precision)
     {
-        if (strpos($number, '.') === false) {
-            return bcadd($number, '0', $precision);
-        }
-
-        list($integers, $decimals) = explode('.', $number);
-        $halfUpValue = $sign . '0.' . str_repeat('0', $precision) . '5';
-        $firstDecimalAfterPrecision = (int)substr($decimals, $precision, 1);
-
-        if ($firstDecimalAfterPrecision === self::HALF) {
-
-            $remainingDecimals = substr($decimals, $precision + 1);
-
-            if (bccomp($remainingDecimals, '0', 64) === 1) {
-
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-
-            } else {
-
-                if ($precision === 0) {
-                    $evenOddDigit = (int)substr($integers, -1);
-                } else {
-                    $evenOddDigit = (int)$decimals[$precision - 1];
-                }
-
-                if ($evenOddDigit % 2) { // odd
-                    $result = $number;
-                } else { // even
-                    $result = bcadd($number, $halfUpValue, $precision + 1);
-                }
-            }
-        } else {
-
-            if ($firstDecimalAfterPrecision > self::HALF) {
-                $result = bcadd($number, $halfUpValue, $precision + 1);
-            } else {
-                $result = $number;
+        if ($result[0] === '-') {
+            if (bccomp(substr($result, 1), '0', $precision) === 0) {
+                return '0';
             }
         }
 
-        return bcadd($result, '0', $precision);
+        return $result;
     }
 
     /**
-     * Round wrapper
+     * BCRound implementation
      *
      * @param     $number
      * @param     $precision
@@ -211,45 +248,31 @@ class Math
      */
     final public static function bcround($number, $precision, $roundingMode = self::ROUND_HALF_UP)
     {
-        if ($precision < 0) {
-            $precision = 0;
+        $precision = self::normalizePrecision($precision);
+
+        if (self::isNotDecimalString($number)) {
+            return bcadd($number, '0', $precision);
         }
 
-        $sign = '';
-
-        if (bccomp('0', $number, 64) == 1) {
-            $sign = '-';
+        if ($roundingMode === self::ROUND_HALF_UP) {
+            return self::bcRoundHalfUp($number, $precision);
         }
 
-        switch ($roundingMode) {
-            case self::ROUND_HALF_UP:
-                $retVal = self::bcRoundHalfUp($sign, $number, $precision);
-                break;
-            case self::ROUND_HALF_DOWN:
-                $retVal = self::bcRoundHalfDown($sign, $number, $precision);
-                break;
-            case self::ROUND_HALF_EVEN:
-                $retVal = self::bcRoundHalfEven($sign, $number, $precision);
-                break;
-            case self::ROUND_HALF_ODD:
-                $retVal = self::bcRoundHalfOdd($sign, $number, $precision);
-                break;
-            default:
-                throw new InvalidArgumentException('Rounding mode should be Money::ROUND_HALF_DOWN | Money::ROUND_HALF_EVEN | Money::ROUND_HALF_ODD | Money::ROUND_HALF_UP');
-        }
+        $firstDecimalAfterPrecision = self::getFirstDecimalAfterPrecision($number, $precision);
 
+        if ($firstDecimalAfterPrecision === self::HALF) {
+            $result = self::roundTied($number, $precision, $roundingMode);
+        } else {
+            $result = self::roundNotTied($firstDecimalAfterPrecision, $number, $precision);
+        }
+        
         /*
          * Arbitrary precision arithmetic allows for '-0.0' which is not equal to '0.0' if compared with bccomp.
          * We have no use for this behaviour, so negative numbers have to be checked if they are minus zero,
          * so we can convert them into unsigned zero and return that.
          */
-        if ($retVal[0] === '-') {
-            $strippedSign = substr($retVal, 1);
-            if (bccomp($strippedSign, '0', $precision) === 0) {
-                $retVal = '0';
-            };
-        }
+        $result = self::normalizeZero($result, $precision);
 
-        return $retVal;
+        return $result;
     }
 }
