@@ -49,7 +49,7 @@ class CurrencyPair
     {
         $currency = "([A-Z]{2,3})";
         $ratio = "([0-9]*\.?[0-9]+)"; // @see http://www.regular-expressions.info/floatingpoint.html
-        $pattern = '#'.$currency.'/'.$currency.' '.$ratio.'#';
+        $pattern = '/'.$currency.'\/'.$currency.' '.$ratio.'/';
 
         $matches = [];
         if (!preg_match($pattern, $iso, $matches)) {

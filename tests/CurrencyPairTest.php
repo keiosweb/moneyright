@@ -11,7 +11,7 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function ConvertsEurToUsdAndBack()
+    public function testConvertsEurToUsdAndBack()
     {
         $eur = Money::EUR(100);
 
@@ -27,7 +27,7 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function ConvertsEurToUsdAndBackWithPrecision()
+    public function testConvertsEurToUsdAndBackWithPrecision()
     {
         $eur = Money::EUR('1.2345');
 
@@ -43,7 +43,7 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function ParsesIso()
+    public function testParsesIso()
     {
         $pair = CurrencyPair::createFromIso('EUR/USD 1.2500');
         $expected = new CurrencyPair(new Currency('EUR'), new Currency('USD'), '1.2500');
@@ -54,7 +54,7 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
      * @expectedException \Keios\MoneyRight\Exceptions\InvalidArgumentException
      * @expectedExceptionMessage Can't create currency pair from ISO string '1.2500', format of string is invalid
      */
-    public function ParsesIsoWithException()
+    public function testParsesIsoWithException()
     {
         CurrencyPair::createFromIso('1.2500');
     }
