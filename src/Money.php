@@ -134,10 +134,10 @@ class Money implements Serializable, JsonSerializable
      */
     public function jsonserialize()
     {
-        return json_encode([
+        return [
             'amount'   => $this->amount,
-            'currency' => json_encode($this->currency),
-        ]);
+            'currency' => $this->currency->jsonserialize(),
+        ];
     }
 
     // GETTERS

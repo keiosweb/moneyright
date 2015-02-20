@@ -320,7 +320,7 @@ class Currency implements Serializable, JsonSerializable
     {
         $data = $this->aggregateData();
 
-        return json_encode($data);
+        return $data;
     }
 
     /**
