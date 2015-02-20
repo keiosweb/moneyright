@@ -116,7 +116,7 @@ class Currency implements Serializable, JsonSerializable
      */
     protected function prepareCurrencies()
     {
-        if (!self::$currencies) {
+        if (is_null(self::$currencies)) {
             self::$currencies = self::loadCurrencies();
         }
     }
