@@ -110,10 +110,12 @@ class Money implements Serializable, JsonSerializable
      */
     public function serialize()
     {
-        return serialize([
-            'amount'   => $this->amount,
-            'currency' => serialize($this->currency),
-        ]);
+        return serialize(
+            [
+                'amount' => $this->amount,
+                'currency' => serialize($this->currency),
+            ]
+        );
     }
 
     /**
@@ -135,7 +137,7 @@ class Money implements Serializable, JsonSerializable
     public function jsonserialize()
     {
         return [
-            'amount'   => $this->amount,
+            'amount' => $this->amount,
             'currency' => $this->currency->jsonserialize(),
         ];
     }
@@ -159,7 +161,19 @@ class Money implements Serializable, JsonSerializable
      */
     public function getAmount()
     {
-        return (integer) bcmul('100', Math::bcround($this->amount, self::BASIC_PRECISION));
+        return (integer)bcmul('100', Math::bcround($this->amount, self::BASIC_PRECISION));
+    }
+
+    /**
+     * Useful for payment systems that don't use high precision
+     *
+     * @param int $roundingMode
+     *
+     * @return string
+     */
+    public function getAmountBasic($roundingMode = self::ROUND_HALF_UP)
+    {
+        return Math::bcround($this->amount, self::BASIC_PRECISION, $roundingMode);
     }
 
     /**
@@ -355,7 +369,7 @@ class Money implements Serializable, JsonSerializable
      * Allocation is compatible with Verraes' Money
      * To use GAAP precision rounding, pass true as second argument
      *
-     * @param array $ratios           List of ratio's
+     * @param array $ratios List of ratio's
      * @param bool  $useGaapPrecision
      *
      * @return array
@@ -372,10 +386,10 @@ class Money implements Serializable, JsonSerializable
             $share = bcdiv(
                 bcmul(
                     $this->amount,
-                    (string) $ratio,
+                    (string)$ratio,
                     $precision
                 ),
-                (string) $total,
+                (string)$total,
                 $precision
             );
             $results[] = new Money($share, $this->currency);
@@ -432,7 +446,7 @@ class Money implements Serializable, JsonSerializable
      */
     private function castValueToString($value)
     {
-        return (string) $value;
+        return (string)$value;
     }
 
     /**
@@ -522,8 +536,12 @@ class Money implements Serializable, JsonSerializable
     private function assertSameCurrency(Money $other)
     {
         if (!$this->isSameCurrency($other)) {
-            throw new InvalidArgumentException(sprintf('Cannot add Money with different currency. Have: %s, given: %s.',
-                    $this->currency->getIsoCode(), $other->getCurrency()->getIsoCode())
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Cannot add Money with different currency. Have: %s, given: %s.',
+                    $this->currency->getIsoCode(),
+                    $other->getCurrency()->getIsoCode()
+                )
             );
         }
     }
@@ -537,8 +555,12 @@ class Money implements Serializable, JsonSerializable
     private function assertOperand($operand, $isDivision = false)
     {
         if (!is_int($operand) && !is_float($operand) && !is_string($operand)) {
-            throw new InvalidArgumentException(sprintf('Operand should be a string, integer or a float, %s of value %s given.',
-                    gettype($operand), (string) $operand)
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Operand should be a string, integer or a float, %s of value %s given.',
+                    gettype($operand),
+                    (string)$operand
+                )
             );
         }
 
@@ -574,6 +596,6 @@ class Money implements Serializable, JsonSerializable
     {
         new Money($string, new Currency('USD')); // TODO optimize?
 
-        return (int) bcmul($string, '100', self::GAAP_PRECISION);
+        return (int)bcmul($string, '100', self::GAAP_PRECISION);
     }
 }
