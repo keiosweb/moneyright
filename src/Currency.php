@@ -98,15 +98,7 @@ class Currency implements Serializable, JsonSerializable
      */
     public function __construct($isoCode)
     {
-        $this->prepareCurrencies();
-
-        $isoCode = strtolower($isoCode);
-
-        if (!array_key_exists($isoCode, self::$currencies)) {
-            throw new UnknownCurrencyException('Currency with '.$isoCode.' iso code does not exist!');
-        }
-
-        $currentCurrency = self::$currencies[$isoCode];
+        $currentCurrency = $this->getCurrencyFromIsoCode($isoCode);
 
         $this->fill($currentCurrency);
     }
@@ -119,6 +111,27 @@ class Currency implements Serializable, JsonSerializable
         if (is_null(self::$currencies)) {
             self::$currencies = self::loadCurrencies();
         }
+    }
+
+    /**
+     * Loads currency information from preloaded data by ISO index
+     *
+     * @param $isoCode
+     *
+     * @return array
+     * @throws \Keios\MoneyRight\Exceptions\UnknownCurrencyException
+     */
+    protected function getCurrencyFromIsoCode($isoCode)
+    {
+        $this->prepareCurrencies();
+
+        $isoCode = strtolower($isoCode);
+
+        if (!array_key_exists($isoCode, self::$currencies)) {
+            throw new UnknownCurrencyException('Currency with '.$isoCode.' iso code does not exist!');
+        }
+
+        return self::$currencies[$isoCode];
     }
 
     /**
@@ -294,9 +307,7 @@ class Currency implements Serializable, JsonSerializable
      */
     public function serialize()
     {
-        $data = $this->aggregateData();
-
-        return serialize($data);
+        return serialize($this->getIsoCode());
     }
 
     /**
@@ -306,9 +317,9 @@ class Currency implements Serializable, JsonSerializable
      */
     public function unserialize($serialized)
     {
-        $this->prepareCurrencies();
-        $unserialized = unserialize($serialized);
-        $this->fill($unserialized);
+        $currentCurrency = $this->getCurrencyFromIsoCode(unserialize($serialized));
+
+        $this->fill($currentCurrency);
     }
 
     /**
