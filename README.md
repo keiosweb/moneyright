@@ -27,7 +27,7 @@ BCMath Arbitrary Precision Arithmetic PHP extension
 Via Composer
 
 ``` bash
-$ composer require keiosweb/moneyright
+$ composer require keios/moneyright
 ```
 
 ## Usage
