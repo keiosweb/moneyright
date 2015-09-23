@@ -340,9 +340,6 @@ class Currency implements Serializable, JsonSerializable
      */
     public static function loadCurrencies()
     {
-        return array_merge(
-            json_decode(file_get_contents(__DIR__.'/config/currency_iso.json'), true),
-            json_decode(file_get_contents(__DIR__.'/config/currency_non_iso.json'), true)
-        );
+        return require __DIR__.'/config/currencies.php';
     }
 }
