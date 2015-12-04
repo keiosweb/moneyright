@@ -2,6 +2,11 @@
 
 All Notable changes to `Keios/MoneyRight` will be documented in this file
 
+## Keios/MoneyRight 1.0.6 / 2015-12-04
+
+### Changed
+- Commited generated php array file into library repository to circumvent [composer not calling scripts of dependencies.](https://github.com/composer/composer/issues/1193)
+
 ## Keios/MoneyRight 1.0.5 / 2015-09-23
 
 ### Changed
