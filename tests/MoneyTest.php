@@ -220,6 +220,19 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function testAbsYieldsCorrectResults()
+    {
+        $this->money1 = new Money('2.3456789', $this->currency1);
+        $this->money2 = new Money('2.3456789', $this->currency1);
+        $this->money3 = new Money('-2.3456789', $this->currency1);
+
+        $this->assertTrue($this->money1->equals($this->money2->abs()));
+        $this->assertTrue($this->money1->equals($this->money3->abs()));
+    }
+
+    /**
+     * @test
+     */
     public function testAddingInstancesWithSameCurrencyYieldsCorrectResults()
     {
         $this->money1 = new Money('2.3456789', $this->currency1); // 2.3457
