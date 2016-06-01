@@ -414,6 +414,16 @@ class Money implements Serializable, JsonSerializable
     }
 
     /**
+     * @return \Keios\MoneyRight\Money
+     */
+    public function abs()
+    {
+        $amount = $this->isNegative() ? substr($this->amount, 1): $this->amount;
+        
+        return new Money($amount, $this->currency);
+    }
+
+    /**
      * @return bool
      */
     public function isZero()
