@@ -321,8 +321,14 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($euro2->greaterThan($euro1));
         $this->assertFalse($euro1->greaterThan($euro2));
+        $this->assertTrue($euro2->greaterThanOrEqual($euro1));
+        $this->assertTrue($euro2->greaterThanOrEqual($euro2));
+        $this->assertFalse($euro1->greaterThanOrEqual($euro2));
         $this->assertTrue($euro1->lessThan($euro2));
         $this->assertFalse($euro2->lessThan($euro1));
+        $this->assertTrue($euro1->lessThanOrEqual($euro2));
+        $this->assertTrue($euro1->lessThanOrEqual($euro1));
+        $this->assertFalse($euro2->lessThanOrEqual($euro1));
 
         $this->assertEquals(-1, $euro1->compare($euro2));
         $this->assertEquals(1, $euro2->compare($euro1));
