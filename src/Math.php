@@ -56,7 +56,7 @@ class Math
      * @param $precision
      * @return bool
      */
-    final private static function isFirstDecimalAfterPrecisionTrailedByZeros($number, $precision)
+    private static function isFirstDecimalAfterPrecisionTrailedByZeros($number, $precision)
     {
         $secondPlaceAfterPrecision = strpos($number, '.') + $precision + 2;
         $remainingDecimals = substr($number, $secondPlaceAfterPrecision);
@@ -69,7 +69,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function getHalfUpValue($number, $precision)
+    private static function getHalfUpValue($number, $precision)
     {
         $sign = self::getSign($number);;
 
@@ -81,7 +81,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function truncate($number, $precision)
+    private static function truncate($number, $precision)
     {
         return bcadd($number, '0', $precision);
     }
@@ -93,7 +93,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function roundNotTied($firstDecimalAfterPrecision, $number, $precision)
+    private static function roundNotTied($firstDecimalAfterPrecision, $number, $precision)
     {
         if ($firstDecimalAfterPrecision > self::HALF) {
             return self::bcRoundHalfUp($number, $precision);
@@ -109,7 +109,7 @@ class Math
      * @return string
      * @throws InvalidArgumentException
      */
-    final private static function roundTied($number, $precision, $roundingMode)
+    private static function roundTied($number, $precision, $roundingMode)
     {
         if (self::isFirstDecimalAfterPrecisionTrailedByZeros($number, $precision)) {
 
@@ -138,7 +138,7 @@ class Math
      * @param $number
      * @return string
      */
-    final private static function getSign($number)
+    private static function getSign($number)
     {
         if (bccomp('0', $number, 64) == 1) {
             return '-';
@@ -152,7 +152,7 @@ class Math
      * @param $precision
      * @return int
      */
-    final private static function getEvenOddDigit($number, $precision)
+    private static function getEvenOddDigit($number, $precision)
     {
         list($integers, $decimals) = explode('.', $number);
         if ($precision === 0) {
@@ -167,7 +167,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function getOddRoundedResult($number, $precision)
+    private static function getOddRoundedResult($number, $precision)
     {
         if (self::getEvenOddDigit($number, $precision) % 2) { // odd
             return self::truncate($number, $precision);
@@ -182,7 +182,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function getEvenRoundedResult($number, $precision)
+    private static function getEvenRoundedResult($number, $precision)
     {
         if (self::getEvenOddDigit($number, $precision) % 2) { // odd
             return self::bcRoundHalfUp($number, $precision);
@@ -197,7 +197,7 @@ class Math
      * @param $precision
      * @return int
      */
-    final private static function getFirstDecimalAfterPrecision($number, $precision)
+    private static function getFirstDecimalAfterPrecision($number, $precision)
     {
         $decimals = explode('.', $number)[1];
         $firstDecimalAfterPrecision = (int)substr($decimals, $precision, 1);
@@ -213,7 +213,7 @@ class Math
      *
      * @return string
      */
-    final private static function bcRoundHalfUp($number, $precision)
+    private static function bcRoundHalfUp($number, $precision)
     {
         return self::truncate(bcadd($number, self::getHalfUpValue($number, $precision), $precision + 1), $precision);
     }
@@ -222,7 +222,7 @@ class Math
      * @param $precision
      * @return int
      */
-    final private static function normalizePrecision($precision)
+    private static function normalizePrecision($precision)
     {
         return ($precision < 0) ? 0 : $precision;
     }
@@ -231,7 +231,7 @@ class Math
      * @param $number
      * @return bool
      */
-    final private static function isNotDecimalString($number)
+    private static function isNotDecimalString($number)
     {
         return strpos($number, '.') === false;
     }
@@ -241,7 +241,7 @@ class Math
      * @param $precision
      * @return string
      */
-    final private static function normalizeZero($result, $precision)
+    private static function normalizeZero($result, $precision)
     {
         if ($result[0] === '-') {
             if (bccomp(substr($result, 1), '0', $precision) === 0) {
