@@ -50,6 +50,12 @@ class CurrencyPair
             );
         }
 
+        if (bccomp((string) $ratio, '0', Money::GAAP_PRECISION) <= 0) {
+            throw new InvalidArgumentException(
+                sprintf('Ratio must be positive, got %s.', (string) $ratio)
+            );
+        }
+
         $this->counterCurrency = $counterCurrency;
         $this->baseCurrency = $baseCurrency;
         $this->ratio = Math::bcround((string) $ratio, Money::GAAP_PRECISION);

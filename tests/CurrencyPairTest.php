@@ -96,6 +96,24 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Keios\MoneyRight\Exceptions\InvalidArgumentException
+     * @expectedExceptionMessage Ratio must be positive, got 0.
+     */
+    public function testConstructorRejectsZeroRatio()
+    {
+        new CurrencyPair(new Currency('EUR'), new Currency('USD'), 0);
+    }
+
+    /**
+     * @expectedException \Keios\MoneyRight\Exceptions\InvalidArgumentException
+     * @expectedExceptionMessage Ratio must be positive, got -0.5.
+     */
+    public function testConstructorRejectsNegativeRatio()
+    {
+        new CurrencyPair(new Currency('EUR'), new Currency('USD'), -0.5);
+    }
+
+    /**
      * @test
      */
     public function testGetRatio()
@@ -116,6 +134,16 @@ class CurrencyPairTest extends PHPUnit_Framework_TestCase
         $pair = new CurrencyPair(new Currency('EUR'), new Currency('USD'), $ratio);
 
         $this->assertEquals($expectedRatio, $pair->getRatio(true));
+    }
+
+    /**
+     * @test
+     */
+    public function testConstructorAcceptsPositiveRatio()
+    {
+        $pair = new CurrencyPair(new Currency('EUR'), new Currency('USD'), 1.0850);
+
+        $this->assertEquals('1.0850', $pair->getRatio(true));
     }
 
     /**

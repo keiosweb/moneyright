@@ -71,7 +71,14 @@ class Money implements Serializable, JsonSerializable
     /**
      * Create a new Money Instance
      *
-     * @param string                     $amount
+     * IMPORTANT: integer input is interpreted as CENTS and divided by 100 for
+     * Verraes Money compatibility. ALWAYS pass amounts as strings to avoid
+     * surprise division.
+     *
+     *   new Money('500', $usd)   // five hundred dollars
+     *   new Money(500, $usd)     // five dollars (500 cents) -- int input is divided by 100
+     *
+     * @param string|int                 $amount  string preferred; int treated as cents
      * @param \Keios\MoneyRight\Currency $currency
      */
     public function __construct($amount, Currency $currency)
@@ -87,9 +94,12 @@ class Money implements Serializable, JsonSerializable
     }
 
     /**
-     * Convenience factory method for an Keios\MoneyRight\Money object
+     * Convenience factory method for an Keios\MoneyRight\Money object.
      *
-     * @example $fiveDollar = Money::USD(500);
+     * IMPORTANT: integer input is interpreted as CENTS -- int input is divided by 100
+     * for Verraes Money compatibility. Always pass strings.
+     *
+     * @example $fiveDollar = Money::USD('500');
      *
      * @param string $method
      * @param array  $arguments
